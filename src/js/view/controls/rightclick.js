@@ -14,6 +14,20 @@ function createDomElement(html) {
     return element;
 }
 
+function applyCustomItems(model, element, items) {
+    items.forEach(item => {
+        const link = item.link;
+        if (link && link.name) {
+            const span = element.querySelector(`[data-jw-name="${link.name}"]`);
+            if (span && link.onclick) {
+                span.onclick = () => {
+                    link.onclick(model);
+                };
+            }
+        }
+    });
+}
+
 export default class RightClick {
 
     buildArray() {
@@ -89,7 +103,8 @@ export default class RightClick {
     }
 
     lazySetup() {
-        const html = rightclickTemplate(this.buildArray());
+        const menu = this.buildArray();
+        const html = rightclickTemplate(menu);
         if (this.el) {
             if (this.html !== html) {
                 this.html = html;
@@ -98,12 +113,14 @@ export default class RightClick {
                 for (let i = newEl.childNodes.length; i--;) {
                     this.el.appendChild(newEl.firstChild);
                 }
+                applyCustomItems(this.model, this.el, menu.items);
             }
             return;
         }
 
         this.html = html;
         this.el = createDomElement(this.html);
+        applyCustomItems(this.model, this.el, menu.items);
 
         this.layer.appendChild(this.el);
 
@@ -122,10 +139,10 @@ export default class RightClick {
     }
 
     setup(_model, _playerElement, layer) {
-        this.playerElement = _playerElement;
         this.model = _model;
-        this.mouseOverContext = false;
+        this.playerElement = _playerElement;
         this.layer = layer;
+        this.mouseOverContext = false;
 
         // Defer the rest of setup until the first click
         _playerElement.oncontextmenu = this.rightClick.bind(this);

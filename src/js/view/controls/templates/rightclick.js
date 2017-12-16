@@ -15,9 +15,13 @@ export default (menu) => {
 
 const rightClickItem = (link = '', title = '', featured, showLogo) => {
     const logo = showLogo ? `<span class="jw-rightclick-logo jw-reset"></span>` : '';
-    return (
-        `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">` +
-            `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>` +
-        `</li>`
-    );
+
+    let content;
+    if (link.name) {
+        content = `<span data-jw-name="${link.name}" class="jw-rightclick-link jw-reset">${logo}${title}</span>`;
+    } else {
+        content = `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>`;
+    }
+
+    return `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">${content}</li>`;
 };
